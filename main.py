@@ -39,18 +39,44 @@ class Snake(object):
 
 
 def draw_grid(w, rows, surface):
-    pass
+    # size of the gap between vertical and horizontal lines on grid
+    size_between = w // rows
+
+    x, y = 0, 0
+    for l in range(rows):
+        x += size_between
+        y += size_between
+
+        # draw the x and y grid lines
+        pygame.draw.line(surface, (255, 255, 255), (x, 0), (x, w))
+        pygame.draw.line(surface, (255, 255, 255), (0, y), (w, y))
+
 
 def redraw_window(surface):
-    pass
+    global width, rows
+
+    # filling the screen
+    surface.fill((0, 0, 0))
+
+    # drawing grid on window
+    draw_grid(width, rows, surface)
+
+    # updating display of window
+    pygame.display.update()
+
 
 def random_snack(rows, items):
     pass
 
+
 def message_box(subject, content):
     pass
 
+
 def main():
+    # making width and rows global for referencing
+    global width, rows
+
     # size for window
     width = 500
 
@@ -70,6 +96,9 @@ def main():
     while flag:
         pygame.time.delay(50)
         clock.tick(10)
+
+        # redrawing window everytime the loop iterates
+        redraw_window(win)
 
 
 main()
