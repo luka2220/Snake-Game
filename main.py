@@ -8,17 +8,42 @@ from tkinter import messagebox
 
 
 class Cube(object):
-    rows = 0
-    w = 0
+    rows = 20
+    w = 500
 
     def __init__(self, start, dirnx=1, dirny=0, colour=(255, 0, 0)):
-        pass
+        self.pos = start
+        self.dirnx = 1
+        self.dirny = 0
+        self.colour = colour
 
     def move(self, dirnx, dirny):
-        pass
+        # changing the x, y directions for movement
+        self.dirnx = dirnx
+        self.dirny = dirny
+
+        self.pos(self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
 
     def draw(self, surface, eyes=False):
-        pass
+        # distance between x, y values
+        distance = self.w // self.rows
+
+        row = self.pos[0]
+        col = self.pos[1]
+
+        # drawing a rectangle
+        pygame.draw.rect(surface, self.colour, (row*distance+1, col*distance+1, distance-2, distance-2))
+
+        # drawing eyes on snake
+        if eyes:
+            centre = distance // 2
+            radius = 3
+
+            circle_middle = (row * distance + centre-radius, col * distance + 8)
+            circle_middle2 = (row * distance + distance - radius * 2, col * distance + 8)
+
+            pygame.draw.circle(surface, (0, 0, 0), circle_middle, radius)
+            pygame.draw.circle(surface, (0, 0, 0), circle_middle2, radius)
 
 
 class Snake(object):
@@ -74,13 +99,28 @@ class Snake(object):
 
                     self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
 
+        # iterating through cube obj
         for i, c in enumerate(self.body):
-            p = c.pos[:]
+            p = c.pos[:]  # grabbing position of the obj
 
             if p in self.turns:
                 turn = self.turns[p]
                 c.move(turn[0], turn[1])
 
+                if i == len(self.body) - 1:
+                    self.turns.pop(p)
+
+            else:
+                if c.dirnx == -1 and c.pos[0] <= 0:
+                    c.pos = (c.rows-1, c.pos[1])
+                elif c.dirnx == 1 and c.pos[0] >= c.rows-1:
+                    c.pos = (0, c.pos[1])
+                elif c.dirny == 1 and c.pos[1] >= c.rows-1:
+                    c.pos = (c.pos[0], 0)
+                elif c.dirny == -1 and c.pos[1] <= 0:
+                    c.pos = (c.pos[0], c.rows-1)
+                else:
+                    c.move(c.dirnx, c.dirny)
 
     def reset(self, pos):
         pass
@@ -89,7 +129,12 @@ class Snake(object):
         pass
 
     def draw(self, surface):
-        pass
+        for i, c in enumerate(self.body):
+            if i == 0:
+                # will draw if it is the head of list(snake)
+                c.draw(surface, True)
+            else:
+                c.draw(surface)
 
 
 def draw_grid(w, rows, surface):
@@ -107,10 +152,13 @@ def draw_grid(w, rows, surface):
 
 
 def redraw_window(surface):
-    global width, rows
+    global width, rows, s
 
     # filling the screen
     surface.fill((0, 0, 0))
+
+    # displaying the snake
+    s.draw(surface)
 
     # drawing grid on window
     draw_grid(width, rows, surface)
@@ -129,7 +177,7 @@ def message_box(subject, content):
 
 def main():
     # making width and rows global for referencing
-    global width, rows
+    global width, rows, s
 
     # size for window
     width = 500
