@@ -22,11 +22,65 @@ class Cube(object):
 
 
 class Snake(object):
+    # list storing cubes
+    body = []
+    # key will represent current position of head
+    # value will be set to the direction we turned
+    turns = {}
+
     def __init__(self, colour, pos):
-        pass
+        self.colour = colour
+
+        # head of snake
+        self.head = Cube(pos)
+        self.body.append(self.head)
+
+        # x and y directions for moving the snake
+        self.dirnx = 0
+        self.dirny = 1
 
     def move(self):
-        pass
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+            # var holds all key values
+            keys = pygame.key.get_pressed()
+
+            for key in keys:
+                if keys[pygame.K_LEFT]:
+                    # direction by setting x and y coordinates
+                    self.dirnx = -1
+                    self.dirny = 0
+
+                    # setting the value of turns to the direction of the head
+                    self.turns[self.head.pos[:]] = [self.dirnx. self.dirny]
+
+                elif keys[pygame.K_RIGHT]:
+                    self.dirnx = 1
+                    self.dirny = 0
+
+                    self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
+
+                elif keys[pygame.K_UP]:
+                    self.dirnx = 0
+                    self.dirny = -1
+
+                    self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
+
+                elif keys[pygame.K_DOWN]:
+                    self.dirnx = 0
+                    self.dirny = 1
+
+                    self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
+
+        for i, c in enumerate(self.body):
+            p = c.pos[:]
+
+            if p in self.turns:
+                turn = self.turns[p]
+                c.move(turn[0], turn[1])
+
 
     def reset(self, pos):
         pass
@@ -43,7 +97,7 @@ def draw_grid(w, rows, surface):
     size_between = w // rows
 
     x, y = 0, 0
-    for l in range(rows):
+    for _ in range(rows):
         x += size_between
         y += size_between
 
