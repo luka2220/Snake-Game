@@ -22,7 +22,7 @@ class Cube(object):
         self.dirnx = dirnx
         self.dirny = dirny
 
-        self.pos(self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
 
     def draw(self, surface, eyes=False):
         # distance between x, y values
@@ -79,25 +79,25 @@ class Snake(object):
                     self.dirny = 0
 
                     # setting the value of turns to the direction of the head
-                    self.turns[self.head.pos[:]] = [self.dirnx. self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
                 elif keys[pygame.K_RIGHT]:
                     self.dirnx = 1
                     self.dirny = 0
 
-                    self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
                 elif keys[pygame.K_UP]:
                     self.dirnx = 0
                     self.dirny = -1
 
-                    self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
                 elif keys[pygame.K_DOWN]:
                     self.dirnx = 0
                     self.dirny = 1
 
-                    self.turns[self.head.pos[:]] = [self.dirnx.self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
         # iterating through cube obj
         for i, c in enumerate(self.body):
@@ -198,6 +198,9 @@ def main():
     while flag:
         pygame.time.delay(50)
         clock.tick(10)
+
+        # will check if a key has been pressed every iteration
+        s.move()
 
         # redrawing window everytime the loop iterates
         redraw_window(win)
