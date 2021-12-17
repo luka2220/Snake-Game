@@ -123,10 +123,32 @@ class Snake(object):
                     c.move(c.dirnx, c.dirny)
 
     def reset(self, pos):
-        pass
+        # resetting the snake for new game
+        self.head = Cube(pos)
+
+        self.body = []
+        self.body.append(self.head)
+
+        self.turns = {}
+        self.dirnx = 0
+        self.dirny = 1
+
 
     def add_cube(self):
-        pass
+        tail = self.body[-1]
+        dx, dy = tail.dirnx, tail.dirny
+
+        if dx == 1 and dy == 0:
+            self.body.append(Cube((tail.pos[0]-1, tail.pos[1])))
+        elif dx == -1 and dy == 0:
+            self.body.append(Cube((tail.pos[0]+1, tail.pos[1])))
+        elif dx == 0 and dy == 1:
+            self.body.append(Cube((tail.pos[0], tail.pos[1]-1)))
+        elif dx == 0 and dy == -1:
+            self.body.append(Cube((tail.pos[0], tail.pos[1]+1)))
+
+        self.body[-1].dirnx = dx
+        self.body[-1].dirny = dy
 
     def draw(self, surface):
         for i, c in enumerate(self.body):
@@ -152,13 +174,16 @@ def draw_grid(w, rows, surface):
 
 
 def redraw_window(surface):
-    global width, rows, s
+    global width, rows, s, snack
 
     # filling the screen
     surface.fill((0, 0, 0))
 
     # displaying the snake
     s.draw(surface)
+
+    # displaying snack
+    snack.draw(surface)
 
     # drawing grid on window
     draw_grid(width, rows, surface)
@@ -167,17 +192,40 @@ def redraw_window(surface):
     pygame.display.update()
 
 
-def random_snack(rows, items):
-    pass
+def random_snack(rows, item):
+    positions = item.body
+
+    # setting x, y value of target the snake must get to
+    while True:
+        x = random.randrange(rows)
+        y = random.randrange(rows)
+
+        # checks if any of the positions are the same as the current snake
+        if len(list(filter(lambda z:z.pos == (x, y), positions))) > 0:
+            continue
+        else:
+            break
+
+    return (x, y)
 
 
 def message_box(subject, content):
-    pass
+    root = tk.Tk()
+
+    root.attributes("-topmost", True)
+    root.withdraw()
+
+    messagebox.showinfo(subject, content)
+
+    try:
+        root.destroy()
+    except:
+        pass
 
 
 def main():
     # making width and rows global for referencing
-    global width, rows, s
+    global width, rows, s, snack
 
     # size for window
     width = 500
@@ -191,6 +239,8 @@ def main():
     # creating a snake object
     s = Snake((255, 0, 0), (10, 10))
 
+    snack = Cube(random_snack(rows, s), colour=(0, 255, 0))
+
     flag = True
     clock = pygame.time.Clock()
 
@@ -201,6 +251,19 @@ def main():
 
         # will check if a key has been pressed every iteration
         s.move()
+
+        # checks if snake has reached the snack
+        if s.body[0].pos == snack.pos:
+            s.add_cube()
+            snack = Cube(random_snack(rows, s), colour=(0, 255, 0))
+
+        # checks if snake head hits body (which will end the game)
+        for x in range(len(s.body)):
+            if s.body[x].pos in list(map(lambda z:z.pos, s.body[x+1:])):
+                print("Score: " + str(len(s.body)))
+                message_box("You lost!", "Play again...")
+                s.reset((10, 10))
+                break
 
         # redrawing window everytime the loop iterates
         redraw_window(win)
