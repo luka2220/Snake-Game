@@ -209,6 +209,10 @@ def random_snack(rows, item):
     return (x, y)
 
 
+def display_score(score):
+    pass
+
+
 def message_box(subject, content):
     root = tk.Tk()
 
@@ -226,6 +230,7 @@ def message_box(subject, content):
 def main():
     # making width and rows global for referencing
     global width, rows, s, snack
+    height = 550
 
     # size for window
     width = 500
@@ -234,7 +239,7 @@ def main():
     rows = 20
 
     # pygame window
-    win = pygame.display.set_mode((width, width))
+    win = pygame.display.set_mode((width, height))
 
     # creating a snake object
     s = Snake((255, 0, 0), (10, 10))
